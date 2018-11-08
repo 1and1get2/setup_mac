@@ -1,0 +1,149 @@
+tap "adoptopenjdk/openjdk"
+tap "dart-lang/dart"
+tap "homebrew/bundle"
+tap "homebrew/cask"
+tap "homebrew/cask-fonts"
+tap "homebrew/cask-versions"
+tap "homebrew/core"
+tap "jlhonora/lsusb"
+cask "java"
+# Graphical system information display for macOS
+brew "archey"
+# Light UNIX download accelerator
+brew "axel"
+# Programmable completion for Bash 3.2
+brew "bash-completion"
+# Dependency manager for Cocoa projects
+brew "cocoapods"
+# GNU File, Shell, and Text utilities
+brew "coreutils"
+# Configurable talking characters in ASCII art
+brew "cowsay"
+# Pack, ship and run any application as a lightweight container
+brew "docker", link: false
+# Command-line interface for SQLite
+brew "sqlite", link: true
+# General-purpose lossless data-compression library
+brew "zlib", link: true
+# Interpreted, interactive, object-oriented programming language
+brew "python"
+# Isolated development environments using Docker
+brew "docker-compose"
+# Docker Machine driver for xhyve
+brew "docker-machine-driver-xhyve"
+# Open video compression format
+brew "theora"
+# Play, record, convert, and stream audio and video
+brew "ffmpeg", args: ["with-fdk-aac", "with-fontconfig", "with-freetype", "with-libass"]
+# Banner-like program prints strings as ASCII art
+brew "figlet"
+# Infamous electronic fortune-cookie generator
+brew "fortune"
+# This library is for the GeoIP Legacy format (dat)
+brew "geoip"
+# Distributed revision control system
+brew "git"
+# Open source programming language to build simple/reliable/efficient software
+brew "go"
+# Manage compile and link flags for libraries
+brew "pkg-config"
+# Interpreted, interactive, object-oriented programming language
+brew "python@2"
+# Open-source build automation tool based on the Groovy and Kotlin DSL
+brew "gradle"
+# Command-line utility that implements hardlinks on macOS
+brew "hardlink-osx"
+# Improved top (interactive process viewer)
+brew "htop"
+# Library for USB device access
+brew "libusb"
+# Library to communicate with iOS devices natively
+brew "libimobiledevice", args: ["HEAD"]
+# Cross-platform library for communicating with iOS devices
+brew "ideviceinstaller"
+# Install and debug iPhone apps from the command-line
+brew "ios-deploy"
+# Statically typed programming language for the JVM
+brew "kotlin"
+# Rainbows and unicorns in your console!
+brew "lolcat"
+# Mac App Store command-line interface
+brew "mas"
+# Netwide Assembler (NASM) is an 80x86 assembler
+brew "nasm"
+# Port scanning utility for large networks
+brew "nmap"
+# Platform built on V8 to build network applications
+brew "node"
+# Collection of macOS command-line utilities
+brew "osxutils"
+# x86 and PowerPC Emulator
+brew "qemu"
+# Cross-platform application and UI framework
+brew "qt"
+# Utility that provides fast incremental file transfer
+brew "rsync"
+# Terminal multiplexer
+brew "tmux"
+# Anonymizing overlay network for TCP
+brew "tor"
+# Use SOCKS-friendly applications with Tor
+brew "torsocks"
+# Display directories as trees (with optional color/HTML output)
+brew "tree"
+# Compress/expand executable files
+brew "upx"
+# Executes a program periodically, showing output fullscreen
+brew "watch"
+# Internet file retriever
+brew "wget"
+# Lightweight macOS virtualization solution based on FreeBSD's bhyve
+brew "xhyve"
+# JavaScript package manager
+brew "yarn"
+# AdoptOpenJDK main binary releases for OpenJDK 10 with HotSpot
+brew "adoptopenjdk/openjdk/adoptopenjdk-openjdk10"
+# The Dart SDK
+brew "dart-lang/dart/dart", args: ["devel"]
+brew "jlhonora/lsusb/lsusb"
+cask "android-studio"
+cask "android-studio-preview"
+cask "appcode"
+cask "atom"
+cask "atom-beta"
+cask "brackets"
+cask "docker-edge"
+cask "etcher"
+cask "font-fira-code"
+cask "google-chrome-beta"
+cask "google-cloud-sdk"
+cask "ieasemusic"
+cask "iina"
+cask "intellij-idea"
+cask "java8"
+cask "kitematic"
+cask "neteasemusic"
+cask "owasp-zap"
+cask "pycharm"
+cask "realm-browser"
+cask "sublime-text"
+cask "torbrowser"
+cask "vagrant"
+cask "virtualbox"
+cask "visual-studio-code"
+cask "visual-studio-code-insiders"
+cask "wireshark"
+mas "Blackmagic Disk Speed Test", id: 425264550
+mas "CloudMounter", id: 1130254674
+mas "DrCleaner", id: 921458519
+mas "DrUnarchiver", id: 1127253508
+mas "HandShaker", id: 1012930195
+mas "Lynda.com", id: 985958984
+mas "Microsoft Remote Desktop", id: 715768417
+mas "Numbers", id: 409203825
+mas "OmniGraffle", id: 1142578753
+mas "Pages", id: 409201541
+mas "PDF Reader Pro Lite", id: 919472673
+mas "Slack", id: 803453959
+mas "WeChat", id: 836500024
+mas "Xnip", id: 1221250572
