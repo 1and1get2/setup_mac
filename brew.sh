@@ -12,7 +12,11 @@
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 echo $SCRIPTPATH
 
+# disable gatekeeper
+sudo spctl --master-disable
 
+# CMD + SHIFT + .
+defaults write com.apple.finder AppleShowAllFiles YES
 
 # loose concurrent open file limitation on mac
 # ulimit -S -n 3000
@@ -24,11 +28,10 @@ alias brewup='brew update; brew upgrade; brew prune; brew cleanup; brew doctor'
 
 brew tap Homebrew/bundle
 
-# disable gatekeeper
-sudo spctl --master-disable
+#backup current brew installs
+brew bundle dump --describe --file=./dump.list
 
-# CMD + SHIFT + .
-defaults write com.apple.finder AppleShowAllFiles YES
+brew bundle install --file=./brew.list
 
 
 mkdir -p ~/.config

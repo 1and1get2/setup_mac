@@ -53,6 +53,7 @@ brew "pkg-config"
 # Interpreted, interactive, object-oriented programming language
 # brew "python@2"
 
+brew "vim"
 
 # Command-line utility that implements hardlinks on macOS
 brew "hardlink-osx"
@@ -153,6 +154,8 @@ mas "WeChat", id: 836500024
 mas "Xnip", id: 1221250572
 
 
+# xcode
+mas "Xcode", id" 497799835
 
 # for android
 
