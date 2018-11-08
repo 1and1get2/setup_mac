@@ -21,10 +21,15 @@ defaults write com.apple.finder AppleShowAllFiles YES
 # loose concurrent open file limitation on mac
 # ulimit -S -n 3000
 
-# install brew
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+chmod a+x ./install_xcode_commandline.sh
+exec sudo ./install_xcode_commandline.sh
 
 alias brewup='brew update; brew upgrade; brew prune; brew cleanup; brew doctor'
+
+if ! type brew > /dev/null; then
+	# install brew
+	/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+fi
 
 brew tap Homebrew/bundle
 
@@ -33,6 +38,7 @@ brew bundle dump --describe --file=./dump.list
 
 brew bundle install --file=./brew.list
 
+brewup
 
 mkdir -p ~/.config
 
