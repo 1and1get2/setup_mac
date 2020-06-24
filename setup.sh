@@ -5,8 +5,19 @@
 
 set -e
 
-set RETURN_VALUE
-BREW_LIST_URL=https://raw.githubusercontent.com/hereisderek/setup_mac/master/brew.list
+ENV_FOLDER=/tmp/env
+#DEBUG
+ORIGINAL_PROFILE=${ENV_FOLDER}/config.sh 
+#ORIGINAL_PROFILE=~/.zshrc
+
+
+RAW_GIT_URL=${RAW_GIT_URL:-"https://raw.githubusercontent.com/hereisderek/setup_mac/master"}
+ENV_FOLDER=${ENV_FOLDER:-~/.config/env}
+ENV_FILE=$ENV_FOLDER/env.env
+ENV_DIRS_FOLDER=${ENV_DIRS_FOLDER:-"${ENV_FOLDER}/env.d"}
+BIN_FOLDER=${BIN_FOLDER:-"$ENV_FOLDER/bin"}
+
+
 
 ################################################
 #	helper methods
@@ -38,14 +49,65 @@ confirmInput() {
     echo "${response:-$2}"
 }
 
+installBrewFromList() {
+	[ -z "$1" ] && return
+	echo "installing brew from list:$1"
+	# curl $1 | brew bundle --file=-
+}
+
+# url=${RAW_GIT_URL}/brew.d/$1
+installBrewByFileName() {
+	[ -z "$1" ] && return
+	local list=${RAW_GIT_URL}/brew.d/$1
+	installBrewFromList $list
+}
 
 
 
 
 ################################################
 #	functions
-################################################
+################################################ for file in ${ENV_DIRS_FOLDER}/{..?,.[!.],}*; do echo "\$file"; done
 
+################################################
+setUpEnvir() {
+	mkdir -p ${ENV_DIRS_FOLDER} $ENV_FOLDER $BIN_FOLDER
+	touch ${ENV_FILE}
+
+	cat >$ENV_FILE<<EOF
+#!/bin/zsh
+# user path folder
+
+echo "$SHELL"
+
+if [[ -d "$BIN_FOLDER" ]]; then
+	export PATH="\$PATH:$BIN_FOLDER"
+fi
+
+
+
+for config_file ($ENV_DIRS_FOLDER/*.env); do
+	echo \$config_file
+done
+
+
+
+function forceAllowApp {
+	sudo xattr -rd com.apple.quarantine $@
+}
+
+function adbForceInstall {
+	adb install -f -r -t $@ 
+}
+
+function forceSignApp {
+	codesign --force --deep --sign - $@
+}
+
+EOF
+
+	 printf "\n\nsource ${ENV_FOLDER}/env.env">>$ORIGINAL_PROFILE
+}
 
 ################################################
 updatePrimaryHostName() {
@@ -101,6 +163,38 @@ genSSHKey() {
 	#pbpaste
 }
 
+################################################ xcode
+installJava() {
+	installBrewByFileName "java.list"
+	cat >${ENV_DIRS_FOLDER}/java.env<<EOF
+export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
+EOF
+}
+
+# https://gist.github.com/patrickhammond/4ddbe49a67e5eb1b9c03
+# sdkmanager --update
+installAndroidSDK() {
+	# export PATH=$ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | sort | tail -1):$PATH
+	installJava
+	installBrewByFileName "android.list"
+
+	cat >${ENV_DIRS_FOLDER}/android.env<<EOF
+# export ANT_HOME=/usr/local/opt/ant
+export MAVEN_HOME=/usr/local/opt/maven
+export GRADLE_HOME=/usr/local/opt/gradle
+# export ANDROID_HOME=/usr/local/opt/android-sdk
+# export ANDROID_NDK_HOME=/usr/local/opt/android-ndk
+echo "android done"
+EOF
+
+
+}
+
+
+
+################################################ xcode
+
+
 ################################################
 installBrewCommand() {
 	# install brew
@@ -127,17 +221,13 @@ installBrewMinCommand() {
 	# vim's dependencies python 3.8 cannot be compiled hence, installed on mac os 10.16(11.0)
 }
 
-installBrewFromList() {
-	echo "importing brew list from:$BREW_LIST_URL"
-	curl $BREW_LIST_URL | brew bundle --file=-
-	# curl ${BREW_LIST_URL} | cat
+installBrewFromCommonList() {
+	installBrewByFileName "common.list"
 }
 
 installBrew() {
 	installBrewCommand
 	installBrewCommonCommand
-	# installBrewCaskCommon
-	# installCommonAppStoreApps
 }
 
 ################################################
@@ -209,12 +299,16 @@ installRClone() {
 #	entry:
 ################################################
 
+setUpEnvir
 # updateHostName
 # genSSHKey
 # installBrew
 # showHiddenFiles
 # installBrew
 # installBrewMinCommand
-installBrewFromList
+# installBrewFromCommonList
+installAndroidSDK
+
 # installOhMyZsh
 
+source $ENV_FILE

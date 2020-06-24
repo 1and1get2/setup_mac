@@ -1,0 +1,17 @@
+tap "adoptopenjdk/openjdk"
+tap "homebrew/cask"
+tap "homebrew/cask-versions"
+tap "homebrew/core"
+
+brew 'maven'
+brew 'gradle'
+brew 'kotlin'
+
+# https://github.com/Homebrew/homebrew-cask/pull/82014
+# android-sdk: discontinued #82014
+#brew 'android-sdk'
+#brew 'android-ndk'
+
+cask 'android-studio'
+casl 'android-studio-preview-beta'
+cask 'android-studio-preview-canary'
