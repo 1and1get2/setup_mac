@@ -119,7 +119,8 @@ _excludeFromTimemachine() {
 }
 
 excludeTimemachinePathes() {
-	curl $RAW_GIT_URL/files/timemachine_exclude.list | while read line
+	# curl "$RAW_GIT_URL/files/timemachine_exclude.list"
+	curl "$RAW_GIT_URL/files/timemachine_exclude.list" | while read line
 	do
 		_excludeFromTimemachine $line
 	done
@@ -127,7 +128,7 @@ excludeTimemachinePathes() {
 
 # .gitignore #############################################
 copyGitIgnore() {
-	curl -K $RAW_GIT_URL/files/.gitignore_global -o ~/.gitignore_global
+	curl "$RAW_GIT_URL/files/.gitignore_global" > ~/.gitignore_global
 }
 
 
