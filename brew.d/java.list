@@ -4,5 +4,5 @@ tap "homebrew/cask-versions"
 tap "homebrew/core"
 
 cask 'adoptopenjdk8'
-cask 'adoptopenjdk13'
+cask 'adoptopenjdk14'
 

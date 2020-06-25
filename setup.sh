@@ -5,17 +5,18 @@
 
 set -e
 
-ENV_FOLDER=/tmp/env
-#DEBUG
-ORIGINAL_PROFILE=${ENV_FOLDER}/config.sh 
-#ORIGINAL_PROFILE=~/.zshrc
+#### for debug
+# ENV_FOLDER=/tmp/env
+# ORIGINAL_PROFILE=${ENV_FOLDER}/config.sh 
+
+ORIGINAL_PROFILE=${ORIGINAL_PROFILE:-"~/.zshrc"}
 
 
 RAW_GIT_URL=${RAW_GIT_URL:-"https://raw.githubusercontent.com/hereisderek/setup_mac/master"}
 ENV_FOLDER=${ENV_FOLDER:-~/.config/env}
-ENV_FILE=$ENV_FOLDER/env.env
+ENV_FILE=${ENV_FOLDER}/env.env
 ENV_DIRS_FOLDER=${ENV_DIRS_FOLDER:-"${ENV_FOLDER}/env.d"}
-BIN_FOLDER=${BIN_FOLDER:-"$ENV_FOLDER/bin"}
+BIN_FOLDER=${BIN_FOLDER:-"${ENV_FOLDER}/bin"}
 
 
 
@@ -49,10 +50,11 @@ confirmInput() {
     echo "${response:-$2}"
 }
 
+
 installBrewFromList() {
 	[ -z "$1" ] && return
 	echo "installing brew from list:$1"
-	# curl $1 | brew bundle --file=-
+	curl $1 | brew bundle --file=-
 }
 
 # url=${RAW_GIT_URL}/brew.d/$1
@@ -75,19 +77,20 @@ setUpEnvir() {
 	touch ${ENV_FILE}
 
 	cat >$ENV_FILE<<EOF
-#!/bin/zsh
+#!/bin/bash
 # user path folder
 
-echo "$SHELL"
+echo "\$SHELL"
+
 
 if [[ -d "$BIN_FOLDER" ]]; then
 	export PATH="\$PATH:$BIN_FOLDER"
 fi
 
 
-
-for config_file ($ENV_DIRS_FOLDER/*.env); do
-	echo \$config_file
+files=$ENV_DIRS_FOLDER/*
+for file in \$files; do
+	source \$file
 done
 
 
@@ -167,7 +170,8 @@ genSSHKey() {
 installJava() {
 	installBrewByFileName "java.list"
 	cat >${ENV_DIRS_FOLDER}/java.env<<EOF
-export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
+# use "/usr/libexec/java_home -V" to 
+export JAVA_HOME=\`/usr/libexec/java_home -v 1.8\`
 EOF
 }
 
@@ -210,9 +214,14 @@ installBrewCommand() {
 	EOS
 }
 
-installBrewMinCommand() {
+installBrewMinCommands() {
 	# git curl wget
 	brew bundle --file=- <<-EOS
+		tap "adoptopenjdk/openjdk"
+		tap "homebrew/bundle"
+		tap "homebrew/cask"
+		tap "homebrew/cask-versions"
+		tap "homebrew/core"
 		brew 'git'
 		brew 'git-extras'
 		brew 'curl'
@@ -226,9 +235,12 @@ installBrewFromCommonList() {
 }
 
 installBrew() {
+	echo "installing brew..."
 	installBrewCommand
-	installBrewCommonCommand
+	installBrewMinCommands
+	confirmYesOrNo "Do you wish to install all sorts of common brew packages" "Y" && installBrewFromCommonList
 }
+
 
 ################################################
 showHiddenFiles() {
@@ -300,15 +312,11 @@ installRClone() {
 ################################################
 
 setUpEnvir
-# updateHostName
-# genSSHKey
-# installBrew
-# showHiddenFiles
-# installBrew
-# installBrewMinCommand
-# installBrewFromCommonList
+updateHostName
+genSSHKey
+showHiddenFiles
+installOhMyZsh
+installBrew
 installAndroidSDK
-
-# installOhMyZsh
 
 source $ENV_FILE
