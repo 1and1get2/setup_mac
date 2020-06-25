@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# you can run this script by execution the following command:
+# you can run this script by execution the following command(not with root!):
 # bash -c "$(wget -O- https://raw.githubusercontent.com/hereisderek/setup_mac/master/setup.sh)"
 
 set -e
@@ -9,14 +9,16 @@ set -e
 # ENV_FOLDER=/tmp/env
 # ORIGINAL_PROFILE=${ENV_FOLDER}/config.sh 
 
-ORIGINAL_PROFILE=${ORIGINAL_PROFILE:-"~/.zshrc"}
-
-
+ORIGINAL_PROFILE=${ORIGINAL_PROFILE:-~/.zshrc}
 RAW_GIT_URL=${RAW_GIT_URL:-"https://raw.githubusercontent.com/hereisderek/setup_mac/master"}
 ENV_FOLDER=${ENV_FOLDER:-~/.config/env}
 ENV_FILE=${ENV_FOLDER}/env.env
 ENV_DIRS_FOLDER=${ENV_DIRS_FOLDER:-"${ENV_FOLDER}/env.d"}
 BIN_FOLDER=${BIN_FOLDER:-"${ENV_FOLDER}/bin"}
+
+# https://github.com/hereisderek/setup_mac/blob/22e401730a49be6a45c3edcbe8e54e4a9ddbc840/files/timemachine_exclude.list
+
+echo $ENV_FILE
 
 
 
@@ -80,9 +82,7 @@ setUpEnvir() {
 #!/bin/bash
 # user path folder
 
-echo "\$SHELL"
-
-
+mkdir -p $BIN_FOLDER
 if [[ -d "$BIN_FOLDER" ]]; then
 	export PATH="\$PATH:$BIN_FOLDER"
 fi
@@ -90,10 +90,10 @@ fi
 
 files=$ENV_DIRS_FOLDER/*
 for file in \$files; do
-	source \$file
+	[ -f \$file ] && source \$file >/dev/null 2>&1
 done
 
-
+export PATH="/usr/local/sbin:\$PATH"
 
 function forceAllowApp {
 	sudo xattr -rd com.apple.quarantine $@
@@ -108,11 +108,30 @@ function forceSignApp {
 }
 
 EOF
-
-	 printf "\n\nsource ${ENV_FOLDER}/env.env">>$ORIGINAL_PROFILE
+	touch $ORIGINAL_PROFILE
+	printf "\n\nsource ${ENV_FOLDER}/env.env">>$ORIGINAL_PROFILE
+}
+# Exclude from timemachine ###############################
+_excludeFromTimemachine() {
+	[ -z "$1" ] && return
+	echo "_excludeFromTimemachine: $1" 
+	sudo tmutil addexclusion -p $1
 }
 
-################################################
+excludeTimemachinePathes() {
+	curl $RAW_GIT_URL/files/timemachine_exclude.list | while read line
+	do
+		_excludeFromTimemachine $line
+	done
+}
+
+# .gitignore #############################################
+copyGitIgnore() {
+	curl -K $RAW_GIT_URL/files/.gitignore_global -o ~/.gitignore_global
+}
+
+
+# Hostname ############################################### 
 updatePrimaryHostName() {
 	[ -z "$1" ] && return
 	echo "updating updatePrimaryHostName:$1"
@@ -190,8 +209,6 @@ export GRADLE_HOME=/usr/local/opt/gradle
 # export ANDROID_NDK_HOME=/usr/local/opt/android-ndk
 echo "android done"
 EOF
-
-
 }
 
 
@@ -208,7 +225,7 @@ installBrewCommand() {
 		echo "brew has been installed, skipping installation"
 	fi
 	
-	
+	brew doctor
 	brew bundle --file=- <<-EOS
 		tap 'Homebrew/bundle'
 	EOS
@@ -244,10 +261,8 @@ installBrew() {
 
 ################################################
 showHiddenFiles() {
-	local current=$(defaults write com.apple.finder AppleShowAllFiles -bool)
-	echo "current:$current"
-	# defaults write com.apple.finder AppleShowAllFiles -bool true
-	# killall Finder
+	defaults write com.apple.finder AppleShowAllFiles -bool true
+	killall Finder
 }
 
 
@@ -276,9 +291,15 @@ installBrewZsh() {
 installOhMyZsh() {
 	if ! type brew > /dev/null; then
 		echo "brew is required for installing OhMyZsh but it is not installed. skipping"
-		return 1
+		return 
 	fi
 	ZSH=~/.config/.oh-my-zsh
+
+	if [ -d $ZSH ]; then
+		echo "$ZSH already exists, skipping oh-my-zsh installation"
+		return
+	fi
+
 	mkdir -p $ZSH
 
 	sh -c "ZSH=$ZSH $(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -314,9 +335,13 @@ installRClone() {
 setUpEnvir
 updateHostName
 genSSHKey
+copyGitIgnore
 showHiddenFiles
 installOhMyZsh
 installBrew
 installAndroidSDK
+installRClone || true
+excludeTimemachinePathes
+
 
 source $ENV_FILE

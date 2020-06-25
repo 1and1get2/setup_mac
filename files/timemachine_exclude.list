@@ -1,1 +1,9 @@
-#tmutil addexclusion -p _item_
+/Users/*/Library/Application Support/Google/DriveFS
+/Applications/Xcode.app
+/Applications/Xcode-beta.app
+~/Downloads
+~/Movies
+~/Music
+~/.android
+~/.docker
+~/.gradle
